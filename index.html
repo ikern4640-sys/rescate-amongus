@@ -1,77 +1,790 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rescate Among Us</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #0d1117;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-      text-align: center;
-      padding: 20px;
-    }
-    .card {
-      background: #161b22;
-      border: 2px solid #30363d;
-      border-radius: 16px;
-      padding: 28px;
-      max-width: 380px;
-      width: 100%;
-    }
-    .crew {
-      font-size: 64px;
-      margin-bottom: 10px;
-    }
-    .count {
-      font-size: 40px;
-      font-weight: bold;
-      color: #ff4655;
-      margin: 12px 0;
-    }
-    button {
-      background: #ff4655;
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 14px 24px;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
-      width: 100%;
-    }
-    button:active {
-      transform: scale(0.98);
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misión de Rescate Among Us - 500 Clicks</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        fredoka: ['Fredoka', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        amongBlue: '#1d4ed8',
+                        amongCyan: '#06b6d4',
+                        amongPink: '#ec4899',
+                        shipDark: '#0f172a',
+                        shipPanel: '#1e293b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Fredoka', sans-serif;
+            background-color: #0b0f19;
+            color: #f8fafc;
+            overflow-x: hidden;
+            user-select: none;
+        }
+
+        /* Ambient glowing stars */
+        .stars-bg {
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 40px 70px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(1px 1px at 90px 40px, #ffffff, rgba(0,0,0,0)),
+                radial-gradient(2px 2px at 160px 120px, #ffffff, rgba(0,0,0,0));
+            background-repeat: repeat;
+            background-size: 200px 200px;
+            animation: starsMove 60s linear infinite;
+        }
+
+        @keyframes starsMove {
+            from { background-position: 0 0; }
+            to { background-position: 1000px 500px; }
+        }
+
+        /* Character Animations */
+        @keyframes sweatDrop {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(18px) scale(0.5); opacity: 0; }
+        }
+
+        @keyframes floatRope {
+            0%, 100% { transform: rotate(-1deg); }
+            50% { transform: rotate(1deg); }
+        }
+
+        @keyframes tremble {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(-1px, 1px); }
+            50% { transform: translate(1px, -1px); }
+            75% { transform: translate(-1px, -1px); }
+        }
+
+        @keyframes jumpJoy {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-25px) scale(1.05); }
+        }
+
+        .anim-sweat {
+            animation: sweatDrop 1.5s infinite ease-in;
+        }
+
+        .anim-rope {
+            transform-origin: top center;
+            animation: floatRope 3s ease-in-out infinite;
+        }
+
+        .anim-tremble {
+            animation: tremble 0.2s infinite;
+        }
+
+        .anim-jump {
+            animation: jumpJoy 0.6s ease-in-out infinite;
+        }
+
+        /* Pulse glowing button effect */
+        .btn-glow {
+            box-shadow: 0 0 25px rgba(236, 72, 153, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.4);
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 35px rgba(236, 72, 153, 0.9), inset 0 2px 6px rgba(255, 255, 255, 0.6);
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+    </style>
 </head>
-<body>
-  <div class="card">
-    <div class="crew">🧑‍🚀🔴🧑‍🚀</div>
-    <h1>Rescate Among Us</h1>
-    <p>Ayuda a rescatar a la tripulación tocando el botón.</p>
-    <div class="count" id="contador">0</div>
-    <button onclick="sumarRescate()">¡Rescatar tripulante!</button>
-  </div>
+<body class="min-h-screen flex flex-col items-center justify-between p-3 sm:p-6 stars-bg relative">
 
-  <script>
-    let rescates = Number(localStorage.getItem("rescates_amongus") || 0);
-    const contadorEl = document.getElementById("contador");
-    contadorEl.textContent = rescates;
+    <!-- Canvas para Confeti de Celebración -->
+    <canvas id="confettiCanvas" class="fixed inset-0 pointer-events-none z-50"></canvas>
 
-    function sumarRescate() {
-      rescates += 1;
-      localStorage.setItem("rescates_amongus", rescates);
-      contadorEl.textContent = rescates;
-    }
-  </script>
+    <!-- Header / Título Principal -->
+    <header class="w-full max-w-4xl text-center my-2 z-10">
+        <div class="inline-flex items-center gap-2 bg-slate-800/80 backdrop-blur-md px-4 py-1.5 rounded-full border border-slate-700 text-xs sm:text-sm text-pink-400 mb-2 shadow-lg">
+            <span class="w-2.5 h-2.5 rounded-full bg-pink-500 animate-ping"></span>
+            <span>¡EVENTO EN TIEMPO REAL MULTIJUGADOR!</span>
+        </div>
+        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-400 to-yellow-300 drop-shadow-md">
+            MISION DE RESCATE AMONG US
+        </h1>
+    </header>
+
+    <!-- Escena Principal SVG -->
+    <main class="w-full max-w-3xl my-2 z-10 flex flex-col items-center">
+        
+        <!-- Contenedor de la Nave Espacial -->
+        <div class="w-full bg-slate-900/90 border-4 border-slate-700 rounded-3xl p-3 sm:p-6 shadow-2xl relative overflow-hidden backdrop-blur-sm">
+            
+            <!-- Ventana del fondo del espacio / Decoración -->
+            <div class="absolute top-2 left-1/2 -translate-x-1/2 w-32 sm:w-48 h-6 bg-slate-800/90 rounded-b-xl border-b-2 border-x-2 border-slate-600 flex items-center justify-center">
+                <span class="text-[10px] sm:text-xs text-slate-400 font-mono tracking-wider">NAVE_CAFETERIA_01</span>
+            </div>
+
+            <!-- Toast / Notificaciones Internas -->
+            <div id="toastNotification" class="hidden absolute top-12 left-1/2 -translate-x-1/2 z-30 bg-slate-800/95 border border-pink-500/50 text-white px-4 py-2 rounded-xl text-xs sm:text-sm shadow-xl flex items-center gap-2 transition-all duration-300">
+                <i id="toastIcon" class="fa-solid fa-circle-info text-pink-400"></i>
+                <span id="toastMessage">Mensaje de notificación</span>
+            </div>
+
+            <!-- ILUSTRACIÓN SVG DINÁMICA -->
+            <div class="w-full h-64 sm:h-80 flex items-center justify-center relative">
+                
+                <svg viewBox="0 0 800 500" class="w-full h-full max-h-full drop-shadow-xl" preserveAspectRatio="xMidYMid meet">
+                    <!-- Suelo de la Nave Espacial -->
+                    <rect x="50" y="400" width="700" height="30" fill="#334155" rx="8" />
+                    <line x1="50" y1="400" x2="750" y2="400" stroke="#475569" stroke-width="4" />
+                    <!-- Remaches del suelo -->
+                    <circle cx="80" cy="415" r="3" fill="#64748b" />
+                    <circle cx="200" cy="415" r="3" fill="#64748b" />
+                    <circle cx="400" cy="415" r="3" fill="#64748b" />
+                    <circle cx="600" cy="415" r="3" fill="#64748b" />
+                    <circle cx="720" cy="415" r="3" fill="#64748b" />
+
+                    <!-- CUERDA COLGANDO DEL TECHO -->
+                    <g id="ropeGroup" class="anim-rope">
+                        <!-- Cuerda vertical -->
+                        <line x1="400" y1="0" x2="400" y2="180" stroke="#d97706" stroke-width="7" stroke-linecap="round" stroke-dasharray="12 3" />
+                        <!-- Nudo y Círculo/Lazo abajo -->
+                        <circle cx="400" cy="190" r="12" fill="none" stroke="#b45309" stroke-width="6" />
+                        <path d="M 380 200 C 370 230, 430 230, 420 200" fill="none" stroke="#d97706" stroke-width="8" stroke-linecap="round" />
+                    </g>
+
+                    <!-- CUERDA CORTADA/ROTA (Oculta por defecto, visible en victoria) -->
+                    <g id="brokenRopeGroup" class="hidden">
+                        <line x1="400" y1="0" x2="400" y2="90" stroke="#d97706" stroke-width="7" stroke-linecap="round" stroke-dasharray="12 3" />
+                        <path d="M 395 90 L 405 105 L 398 120" fill="none" stroke="#b45309" stroke-width="4" />
+                    </g>
+
+
+                    <!-- 1. TRIPULANTE AZUL OSCURO (A la izquierda, Sombrero de copa, Preocupado) -->
+                    <g id="blueCrewmate" transform="translate(140, 240)">
+                        <!-- Sombra inferior -->
+                        <ellipse cx="55" cy="162" rx="45" ry="10" fill="#0f172a" opacity="0.6" />
+                        <!-- Mochila -->
+                        <rect x="0" y="45" width="25" height="70" rx="10" fill="#1e3a8a" stroke="#0f172a" stroke-width="6" />
+                        <!-- Cuerpo -->
+                        <path d="M 20 60 C 20 15, 90 15, 90 60 L 90 140 C 90 150, 80 160, 70 160 L 65 160 C 55 160, 55 145, 55 140 L 55 140 C 55 145, 45 160, 35 160 L 30 160 C 20 160, 20 150, 20 140 Z" fill="#1d4ed8" stroke="#0f172a" stroke-width="7" />
+                        <!-- Visor Azul -->
+                        <ellipse cx="70" cy="62" rx="22" ry="15" fill="#93c5fd" stroke="#0f172a" stroke-width="5" />
+                        <ellipse cx="74" cy="58" rx="12" ry="7" fill="#ffffff" opacity="0.7" />
+                        
+                        <!-- Sombrero de Copa Elegante -->
+                        <g transform="translate(25, -25)">
+                            <!-- Ala del sombrero -->
+                            <ellipse cx="38" cy="40" rx="36" ry="9" fill="#1e2937" stroke="#0f172a" stroke-width="4" />
+                            <!-- Copa -->
+                            <rect x="18" y="2" width="40" height="36" rx="4" fill="#1f2937" stroke="#0f172a" stroke-width="4" />
+                            <!-- Cinta roja del sombrero -->
+                            <rect x="18" y="28" width="40" height="8" fill="#dc2626" />
+                        </g>
+
+                        <!-- Gotas de sudor preocupado -->
+                        <path id="blueSweat" class="anim-sweat" d="M 98 45 C 98 45, 103 52, 98 56 C 93 56, 93 45, 98 45 Z" fill="#38b6ff" />
+                    </g>
+
+
+                    <!-- 2. TRIPULANTE CYAN / CELESTE (A la derecha, Flor en la cabeza, Preocupado) -->
+                    <g id="cyanCrewmate" transform="translate(560, 240)">
+                        <!-- Sombra inferior -->
+                        <ellipse cx="45" cy="162" rx="45" ry="10" fill="#0f172a" opacity="0.6" />
+                        <!-- Mochila -->
+                        <rect x="65" y="45" width="25" height="70" rx="10" fill="#0891b2" stroke="#0f172a" stroke-width="6" />
+                        <!-- Cuerpo mirando hacia la izquierda -->
+                        <path d="M 70 60 C 70 15, 0 15, 0 60 L 0 140 C 0 150, 10 160, 20 160 L 25 160 C 35 160, 35 145, 35 140 L 35 140 C 35 145, 45 160, 55 160 L 60 160 C 70 160, 70 150, 70 140 Z" fill="#06b6d4" stroke="#0f172a" stroke-width="7" />
+                        <!-- Visor Celeste -->
+                        <ellipse cx="20" cy="62" rx="22" ry="15" fill="#a5f3fc" stroke="#0f172a" stroke-width="5" />
+                        <ellipse cx="16" cy="58" rx="12" ry="7" fill="#ffffff" opacity="0.7" />
+
+                        <!-- Flor en la cabeza -->
+                        <g transform="translate(22, 0)">
+                            <!-- Tallo/Hoja -->
+                            <path d="M 12 18 Q 10 8 12 0" fill="none" stroke="#22c55e" stroke-width="4" stroke-linecap="round" />
+                            <path d="M 12 10 Q 20 6 22 12" fill="#22c55e" />
+                            <!-- Petalos Rosas -->
+                            <circle cx="12" cy="-4" r="6" fill="#ff70a6" />
+                            <circle cx="4" cy="2" r="6" fill="#ff70a6" />
+                            <circle cx="20" cy="2" r="6" fill="#ff70a6" />
+                            <circle cx="7" cy="10" r="6" fill="#ff70a6" />
+                            <circle cx="17" cy="10" r="6" fill="#ff70a6" />
+                            <!-- Centro amarillo -->
+                            <circle cx="12" cy="4" r="5" fill="#facc15" />
+                        </g>
+
+                        <!-- Gota de sudor preocupado -->
+                        <path id="cyanSweat" class="anim-sweat" d="M -8 45 C -8 45, -13 52, -8 56 C -3 56, -3 45, -8 45 Z" fill="#38b6ff" />
+                    </g>
+
+
+                    <!-- 3. SILLA DE MADERA Y TRIPULANTE ROSA -->
+                    <!-- Silla de Madera -->
+                    <g id="woodenChair" transform="translate(355, 300)">
+                        <!-- Patas traseras/sombras -->
+                        <rect x="12" y="40" width="10" height="60" fill="#582f0e" rx="2" />
+                        <rect x="68" y="40" width="10" height="60" fill="#582f0e" rx="2" />
+                        <!-- Asiento de madera -->
+                        <rect x="5" y="30" width="80" height="15" fill="#8b5e3c" stroke="#3a1e05" stroke-width="4" rx="4" />
+                        <!-- Patas delanteras -->
+                        <rect x="10" y="45" width="12" height="55" fill="#78350f" stroke="#3a1e05" stroke-width="3" rx="2" />
+                        <rect x="68" y="45" width="12" height="55" fill="#78350f" stroke="#3a1e05" stroke-width="3" rx="2" />
+                        <!-- Travesaños de la silla -->
+                        <line x1="16" y1="70" x2="74" y2="70" stroke="#582f0e" stroke-width="4" />
+                    </g>
+
+                    <!-- TRIPULANTE ROSA (Arriba de la silla / debajo de la cuerda) -->
+                    <g id="pinkCrewmate" class="anim-tremble" transform="translate(355, 175)">
+                        <!-- Mochila -->
+                        <rect x="65" y="45" width="22" height="65" rx="10" fill="#be185d" stroke="#0f172a" stroke-width="6" />
+                        <!-- Cuerpo -->
+                        <path d="M 70 55 C 70 15, 0 15, 0 55 L 0 125 C 0 135, 10 145, 20 145 L 25 145 C 35 145, 35 130, 35 125 L 35 125 C 35 130, 45 145, 55 145 L 60 145 C 70 145, 70 135, 70 125 Z" fill="#ec4899" stroke="#0f172a" stroke-width="7" />
+                        <!-- Visor Rosa -->
+                        <ellipse cx="22" cy="55" rx="20" ry="14" fill="#fbcfe8" stroke="#0f172a" stroke-width="5" />
+                        <ellipse cx="18" cy="52" rx="10" ry="6" fill="#ffffff" opacity="0.8" />
+
+                        <!-- Ojos/expresión preocupada sobre el visor -->
+                        <g id="pinkScaredExpression">
+                            <path d="M 12 48 Q 18 53 24 48" fill="none" stroke="#831843" stroke-width="3" stroke-linecap="round" />
+                            <!-- Temblores / líneas de nerviosismo -->
+                            <line x1="-10" y1="20" x2="-2" y2="25" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
+                            <line x1="75" y1="20" x2="83" y2="25" stroke="#f43f5e" stroke-width="3" stroke-linecap="round" />
+                        </g>
+
+                        <!-- Sombrero de fiesta (se activa en victoria) -->
+                        <g id="partyHat" class="hidden" transform="translate(20, -25)">
+                            <polygon points="15,35 30,0 45,35" fill="#facc15" stroke="#0f172a" stroke-width="3" />
+                            <circle cx="30" cy="0" r="5" fill="#ef4444" />
+                            <circle cx="22" cy="20" r="3" fill="#3b82f6" />
+                            <circle cx="35" cy="26" r="3" fill="#22c55e" />
+                        </g>
+                    </g>
+
+                    <!-- Elementos de Celebración Feliz (Corazones / Estrellas encendidas) -->
+                    <g id="celebrationIcons" class="hidden">
+                        <!-- Corazones volando -->
+                        <path d="M 330 180 C 330 170, 315 160, 305 175 C 295 160, 280 170, 280 180 C 280 195, 305 210, 305 210 C 305 210, 330 195, 330 180 Z" fill="#f43f5e" class="animate-bounce" />
+                        <path d="M 520 180 C 520 170, 505 160, 495 175 C 485 160, 470 170, 470 180 C 470 195, 495 210, 495 210 C 495 210, 520 195, 520 180 Z" fill="#f43f5e" class="animate-bounce" />
+                    </g>
+                </svg>
+
+            </div>
+
+            <!-- TEXTO PREDICCIÓN / AVISO DRAMÁTICO EN LA NAVE -->
+            <div class="mt-2 text-center bg-slate-950/70 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-inner">
+                <p id="mainRuleText" class="text-sm sm:text-lg font-bold text-yellow-300 tracking-wide">
+                    "Si quieren salvarlo hagan 500 clicks, si en 2 días no llega <span class="text-red-500 font-extrabold tracking-widest bg-red-950/60 px-2 py-0.5 rounded border border-red-800/80">######</span>"
+                </p>
+                
+                <!-- Reloj de Cuenta Regresiva de 2 Días (48 horas) -->
+                <div class="mt-2 flex items-center justify-center gap-3 text-xs sm:text-sm font-mono text-slate-300">
+                    <span class="flex items-center gap-1"><i class="fa-regular fa-clock text-pink-400"></i> TIEMPO RESTANTE:</span>
+                    <div class="flex gap-1.5 font-bold text-pink-300 bg-slate-900 px-3 py-1 rounded-lg border border-slate-700">
+                        <span id="timerHours">47</span>h :
+                        <span id="timerMinutes">59</span>m :
+                        <span id="timerSeconds">59</span>s
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Panel de Control Interactivo y Contador -->
+    <section class="w-full max-w-xl z-10 flex flex-col items-center gap-4 my-2">
+        
+        <!-- Tarjeta del Contador Global -->
+        <div class="w-full bg-slate-900/90 border-2 border-slate-700 rounded-2xl p-4 sm:p-5 shadow-xl text-center backdrop-blur-md">
+            
+            <div class="flex justify-between items-center mb-2 text-xs sm:text-sm text-slate-400 font-semibold uppercase tracking-wider">
+                <span><i class="fa-solid fa-users text-cyan-400 mr-1"></i> Clics Globales</span>
+                <span id="percentText" class="text-pink-400 font-bold">0%</span>
+            </div>
+
+            <!-- Contador Número Gigante -->
+            <div class="text-4xl sm:text-6xl font-black text-white tracking-tight my-1 flex items-center justify-center gap-2">
+                <span id="clickCounterDisplay" class="text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-yellow-300">0</span>
+                <span class="text-slate-600 font-light text-3xl sm:text-5xl">/</span>
+                <span class="text-slate-400 text-2xl sm:text-4xl">500</span>
+            </div>
+
+            <!-- Barra de Progreso -->
+            <div class="w-full bg-slate-950 h-5 sm:h-6 rounded-full p-1 border border-slate-800 relative overflow-hidden my-3">
+                <div id="progressBar" class="h-full bg-gradient-to-r from-cyan-500 via-pink-500 to-yellow-400 rounded-full transition-all duration-500 w-0 shadow-lg"></div>
+            </div>
+
+            <!-- BOTÓN PRINCIPAL DE ACCIÓN -->
+            <button id="rescueBtn" onclick="handleUserClick()" class="w-full py-4 sm:py-5 px-6 rounded-2xl bg-gradient-to-r from-pink-500 via-rose-500 to-yellow-500 text-white font-extrabold text-xl sm:text-2xl tracking-wider uppercase btn-glow transform active:scale-95 transition-all duration-150 flex items-center justify-center gap-3 border-2 border-pink-300/40">
+                <i class="fa-solid fa-hand-pointer animate-bounce"></i>
+                <span>¡HACER CLIC PARA SALVARLO!</span>
+            </button>
+
+            <!-- Estado de Voto del Usuario -->
+            <div id="userStatusBox" class="mt-3 text-xs sm:text-sm text-slate-300 bg-slate-800/60 rounded-xl p-2.5 border border-slate-700 flex items-center justify-center gap-2">
+                <i class="fa-solid fa-circle-info text-cyan-400"></i>
+                <span id="userStatusText">Cada persona puede aportar <b>1 solo clic</b>. ¡Comparte la página!</span>
+            </div>
+
+        </div>
+
+        <!-- Botón para Compartir -->
+        <button onclick="shareMission()" class="inline-flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 text-slate-200 px-5 py-2.5 rounded-xl border border-slate-600 text-xs sm:text-sm font-semibold transition-all shadow-md active:scale-95">
+            <i class="fa-solid fa-share-nodes text-pink-400"></i>
+            <span>Copiar Enlace para Pedir Ayuda</span>
+        </button>
+
+    </section>
+
+    <!-- Footer -->
+    <footer class="w-full max-w-4xl text-center text-slate-500 text-xs my-2 z-10">
+        Inspirado en Among Us • Sincronización Global en Tiempo Real
+    </footer>
+
+
+    <!-- LOGICA SCRIPT CON FIREBASE -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // === CONFIGURACIÓN Y VARIABLES DE FIREBASE ===
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'amongus-rescue-500';
+        
+        // Fallback seguro si firebase_config no está inyectado
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : {
+                apiKey: "demo-api-key",
+                authDomain: "demo-app.firebaseapp.com",
+                projectId: "demo-app",
+                storageBucket: "demo-app.appspot.com",
+                messagingSenderId: "123456789",
+                appId: "1:123456789:web:abcdef"
+            };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // Rutas estrictas según las reglas de la plataforma
+        const PUBLIC_DOC_PATH = doc(db, 'artifacts', appId, 'public', 'data', 'campaign', 'state');
+        
+        let currentUser = null;
+        let hasVotedLocally = false;
+        let globalClicksCount = 0;
+        let targetClicks = 500;
+        let missionEndTime = null;
+        let timerInterval = null;
+        let isMissionCompleted = false;
+
+        // === SINTETIZADOR DE AUDIO WEB (Sin archivos externos) ===
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playClickSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(440, audioCtx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.1);
+        }
+
+        function playSuccessSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, idx) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.2, audioCtx.currentTime + idx * 0.12);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + idx * 0.12 + 0.4);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(audioCtx.currentTime + idx * 0.12);
+                osc.stop(audioCtx.currentTime + idx * 0.12 + 0.4);
+            });
+        }
+
+        function playDeniedSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(180, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(130, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.25);
+        }
+
+        // === INICIALIZACIÓN DE AUTENTICACIÓN Y REGISTRO DE CLIC ===
+        async function initAuth() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+            } catch (err) {
+                console.warn("Auth fallback to anonymous:", err);
+                try {
+                    await signInAnonymously(auth);
+                } catch (e) {
+                    console.error("Auth failed:", e);
+                }
+            }
+        }
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                checkUserVoteStatus();
+                subscribeToGlobalCounter();
+            }
+        });
+
+        // Verificación si el usuario ya votó
+        async function checkUserVoteStatus() {
+            if (!currentUser) return;
+            
+            // 1. Verificar localStorage
+            const localCheck = localStorage.getItem(`voted_${appId}_${currentUser.uid}`);
+            if (localCheck === 'true') {
+                hasVotedLocally = true;
+            }
+
+            // 2. Verificar en Firestore usuario
+            try {
+                const userVoteDoc = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'action', 'voted');
+                const snap = await getDoc(userVoteDoc);
+                if (snap.exists() && snap.data().hasVoted) {
+                    hasVotedLocally = true;
+                }
+            } catch (err) {
+                console.log("Consulta estado usuario:", err.message);
+            }
+
+            updateButtonState();
+        }
+
+        // Suscripción en Tiempo Real al Documento Público
+        function subscribeToGlobalCounter() {
+            onSnapshot(PUBLIC_DOC_PATH, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    globalClicksCount = data.clicks || 0;
+                    
+                    // Manejo del temporizador sincronizado (2 días desde inicio)
+                    if (data.startTime) {
+                        const startMs = data.startTime.toMillis ? data.startTime.toMillis() : data.startTime;
+                        missionEndTime = startMs + (2 * 24 * 60 * 60 * 1000); // 2 días
+                        startCountdownTimer();
+                    } else if (currentUser) {
+                        // Inicializar timestamp si no existe
+                        setDoc(PUBLIC_DOC_PATH, { startTime: serverTimestamp() }, { merge: true });
+                    }
+
+                    updateUI(globalClicksCount);
+                } else if (currentUser) {
+                    // Crear documento inicial si es la primera vez
+                    setDoc(PUBLIC_DOC_PATH, {
+                        clicks: 0,
+                        target: 500,
+                        startTime: serverTimestamp()
+                    });
+                }
+            }, (error) => {
+                console.error("Error en Firestore snapshot:", error);
+                showToast("Error de conexión en tiempo real", "error");
+            });
+        }
+
+        // Manejador del clic del usuario
+        window.handleUserClick = async function() {
+            if (!currentUser) {
+                showToast("Conectando con el servidor, intenta de nuevo...", "info");
+                return;
+            }
+
+            if (isMissionCompleted) {
+                showToast("¡El tripulante rosa ya ha sido salvado!", "success");
+                return;
+            }
+
+            if (hasVotedLocally) {
+                playDeniedSound();
+                showToast("¡Ya aportaste tu clic! Comparte para llegar a 500.", "warning");
+                return;
+            }
+
+            try {
+                playClickSound();
+
+                // Marcar inmediatamente en cliente para feedback instantáneo
+                hasVotedLocally = true;
+                localStorage.setItem(`voted_${appId}_${currentUser.uid}`, 'true');
+                updateButtonState();
+
+                // Incremento atómico en Firestore
+                await setDoc(PUBLIC_DOC_PATH, {
+                    clicks: increment(1)
+                }, { merge: true });
+
+                // Registrar en documento privado del usuario
+                const userVoteDoc = doc(db, 'artifacts', appId, 'users', currentUser.uid, 'action', 'voted');
+                await setDoc(userVoteDoc, {
+                    hasVoted: true,
+                    votedAt: serverTimestamp()
+                });
+
+                showToast("¡Tu clic ha sido registrado con éxito!", "success");
+
+            } catch (err) {
+                console.error("Error al registrar clic:", err);
+                showToast("Ocurrió un error al enviar tu clic", "error");
+            }
+        };
+
+        // Actualizar la interfaz de usuario con el conteo global
+        function updateUI(clicks) {
+            const countDisplay = document.getElementById('clickCounterDisplay');
+            const progressBar = document.getElementById('progressBar');
+            const percentText = document.getElementById('percentText');
+
+            countDisplay.textContent = clicks;
+
+            const percentage = Math.min(100, Math.floor((clicks / targetClicks) * 100));
+            progressBar.style.width = `${percentage}%`;
+            percentText.textContent = `${percentage}%`;
+
+            // Verificar si se alcanzó la meta de 500
+            if (clicks >= targetClicks && !isMissionCompleted) {
+                triggerVictoryState();
+            }
+        }
+
+        // Actualizar estado visual del botón según el voto
+        function updateButtonState() {
+            const btn = document.getElementById('rescueBtn');
+            const statusText = document.getElementById('userStatusText');
+
+            if (isMissionCompleted) {
+                btn.className = "w-full py-4 sm:py-5 px-6 rounded-2xl bg-emerald-600 text-white font-extrabold text-xl sm:text-2xl shadow-lg flex items-center justify-center gap-3 cursor-default";
+                btn.innerHTML = `<i class="fa-solid fa-circle-check"></i> <span>¡MISIÓN CUMPLIDA!</span>`;
+                statusText.innerHTML = `<b class="text-emerald-400">¡Logrado!</b> Gracias a tu ayuda el tripulante rosa está a salvo.`;
+                return;
+            }
+
+            if (hasVotedLocally) {
+                btn.className = "w-full py-4 sm:py-5 px-6 rounded-2xl bg-slate-800 text-slate-400 font-extrabold text-lg sm:text-xl border border-slate-700 cursor-not-allowed flex items-center justify-center gap-3";
+                btn.innerHTML = `<i class="fa-solid fa-check text-emerald-400"></i> <span>¡YA APORTASTE TU CLIC!</span>`;
+                statusText.innerHTML = `<span class="text-pink-400 font-bold">¡Gracias!</span> Tu clic ya fue contado. Comparte la página con más personas.`;
+            }
+        }
+
+        // ESTADO DE VICTORIA (500 Clicks alcanzados)
+        function triggerVictoryState() {
+            isMissionCompleted = true;
+            playSuccessSound();
+
+            // 1. Ocultar Cuerda
+            document.getElementById('ropeGroup').classList.add('hidden');
+            document.getElementById('brokenRopeGroup').classList.remove('hidden');
+
+            // 2. Animar al tripulante Rosa bajando a salvo de la silla
+            const pink = document.getElementById('pinkCrewmate');
+            pink.classList.remove('anim-tremble');
+            pink.classList.add('anim-jump');
+            // Mover hacia abajo como si bajara de la silla al suelo
+            pink.setAttribute('transform', 'translate(355, 255)');
+
+            // Ocultar expresión de miedo y mostrar sombrero de fiesta
+            document.getElementById('pinkScaredExpression').classList.add('hidden');
+            document.getElementById('partyHat').classList.remove('hidden');
+
+            // Mostrar iconos de celebración
+            document.getElementById('celebrationIcons').classList.remove('hidden');
+
+            // Quitar gota de sudor a los otros
+            const blueSweat = document.getElementById('blueSweat');
+            const cyanSweat = document.getElementById('cyanSweat');
+            if (blueSweat) blueSweat.style.display = 'none';
+            if (cyanSweat) cyanSweat.style.display = 'none';
+
+            // Actualizar texto del aviso
+            document.getElementById('mainRuleText').innerHTML = `<span class="text-emerald-400 text-xl font-black">🎉 ¡FELICIDADES! ¡SE LOGRARON LOS 500 CLICKS Y EL TRIPULANTE ESTÁ A SALVO! 🎉</span>`;
+
+            updateButtonState();
+            startConfetti();
+        }
+
+        // Temporizador de 48 Horas
+        function startCountdownTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+
+            function updateTimer() {
+                if (!missionEndTime) return;
+
+                const now = Date.now();
+                const diff = missionEndTime - now;
+
+                if (diff <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timerHours').textContent = '00';
+                    document.getElementById('timerMinutes').textContent = '00';
+                    document.getElementById('timerSeconds').textContent = '00';
+
+                    if (!isMissionCompleted) {
+                        document.getElementById('mainRuleText').innerHTML = `<span class="text-red-500 font-black">###### ¡SE ACABÓ EL TIEMPO DE 2 DÍAS! ######</span>`;
+                    }
+                    return;
+                }
+
+                const hours = Math.floor(diff / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('timerHours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('timerMinutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('timerSeconds').textContent = String(seconds).padStart(2, '0');
+            }
+
+            updateTimer();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Sistema de Notificaciones Toast
+        function showToast(message, type = "info") {
+            const toast = document.getElementById('toastNotification');
+            const toastMessage = document.getElementById('toastMessage');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMessage.textContent = message;
+
+            if (type === 'error') {
+                toastIcon.className = "fa-solid fa-triangle-exclamation text-red-400";
+            } else if (type === 'warning') {
+                toastIcon.className = "fa-solid fa-triangle-exclamation text-yellow-400";
+            } else if (type === 'success') {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
+            } else {
+                toastIcon.className = "fa-solid fa-circle-info text-pink-400";
+            }
+
+            toast.classList.remove('hidden');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Compartir la URL
+        window.shareMission = function() {
+            const currentUrl = window.location.href;
+            
+            // Intentar copiar al portapapeles con fallback seguro
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(currentUrl).then(() => {
+                    showToast("¡Enlace copiado al portapapeles!", "success");
+                }).catch(() => {
+                    fallbackCopyText(currentUrl);
+                });
+            } else {
+                fallbackCopyText(currentUrl);
+            }
+        };
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("¡Enlace copiado!", "success");
+            } catch (err) {
+                showToast("Copia este enlace: " + text, "info");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // === EFECTO DE CONFETI EN CANVAS ===
+        function startConfetti() {
+            const canvas = document.getElementById('confettiCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const pieces = [];
+            const colors = ['#ec4899', '#38b6ff', '#facc15', '#22c55e', '#a855f7'];
+
+            for (let i = 0; i < 150; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    speed: Math.random() * 4 + 2,
+                    angle: Math.random() * 360
+                });
+            }
+
+            function animateConfetti() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach((p) => {
+                    p.y += p.speed;
+                    p.angle += 3;
+                    if (p.y > canvas.height) p.y = -10;
+
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.angle * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                });
+                requestAnimationFrame(animateConfetti);
+            }
+            animateConfetti();
+        }
+
+        // Inicializar al cargar
+        window.onload = function() {
+            initAuth();
+        };
+    </script>
 </body>
 </html>
-
