@@ -1,1 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rescate Among Us</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0d1117;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      text-align: center;
+      padding: 20px;
+    }
+    .card {
+      background: #161b22;
+      border: 2px solid #30363d;
+      border-radius: 16px;
+      padding: 28px;
+      max-width: 380px;
+      width: 100%;
+    }
+    .crew {
+      font-size: 64px;
+      margin-bottom: 10px;
+    }
+    .count {
+      font-size: 40px;
+      font-weight: bold;
+      color: #ff4655;
+      margin: 12px 0;
+    }
+    button {
+      background: #ff4655;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 14px 24px;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:active {
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="crew">🧑‍🚀🔴🧑‍🚀</div>
+    <h1>Rescate Among Us</h1>
+    <p>Ayuda a rescatar a la tripulación tocando el botón.</p>
+    <div class="count" id="contador">0</div>
+    <button onclick="sumarRescate()">¡Rescatar tripulante!</button>
+  </div>
+
+  <script>
+    let rescates = Number(localStorage.getItem("rescates_amongus") || 0);
+    const contadorEl = document.getElementById("contador");
+    contadorEl.textContent = rescates;
+
+    function sumarRescate() {
+      rescates += 1;
+      localStorage.setItem("rescates_amongus", rescates);
+      contadorEl.textContent = rescates;
+    }
+  </script>
+</body>
+</html>
 
